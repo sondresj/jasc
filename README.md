@@ -3,7 +3,7 @@
 ## Features
 * Circular Dependency detection
 * Lazy loading of services
-    * the Service callback is called once when the service is resolved
+    * the Service callback function is called once when the service is resolved
 * Services are served as properties on the container
 
 ## Usage
@@ -23,14 +23,14 @@ container.greet('Michael Jackson')
 Dependencies 
 ```
 const container = new Container()
-const store = createStore(rootReducer)
+
 container
-    .serve('store', () => store)
+    .serve('store', () => createStore(rootReducer))
     .serve('actionTypes', () => ({
         INCREMENT: 'INCREMENT',
         DECREMENT: 'DECREMENT',
     }))
-    .serve('Actions, c => ({
+    .serve('Actions', c => ({
         increment: () => c.store.dispatch({type: c.actionTypes.INCREMENT}),
         decrement: () => c.store.dispatch({type: c.actionTypes.DECREMENT}),
     }))
