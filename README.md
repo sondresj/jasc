@@ -1,4 +1,6 @@
 # Just Another Service Container
+
+[![NPM Version](https://img.shields.io/npm/v/jasc.svg?style=flat)](https://www.npmjs.com/package/jasc)
 [![CircleCI](https://circleci.com/gh/sondresj/jasc.svg?style=svg)](https://circleci.com/gh/sondresj/jasc)
 
 ## Features
