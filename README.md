@@ -1,4 +1,5 @@
 # Just Another Service Container
+[![CircleCI](https://circleci.com/gh/sondresj/jasc.svg?style=svg)](https://circleci.com/gh/sondresj/jasc)
 
 ## Features
 * Circular Dependency detection
