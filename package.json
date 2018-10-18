@@ -1,0 +1,26 @@
+{
+  "name": "jasc",
+  "version": "0.1.0",
+  "description": "Just Another Service Container, as simple as possible",
+  "main": "src/container.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sondresj/jasc.git"
+  },
+  "keywords": [
+    "ioc",
+    "container",
+    "service"
+  ],
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/sondresj/jasc/issues"
+  },
+  "homepage": "https://github.com/sondresj/jasc#readme",
+  "devDependencies": {
+    "jest": "^23.6.0"
+  }
+}
