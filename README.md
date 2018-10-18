@@ -7,6 +7,10 @@
     * the Service callback function is called once when the service is resolved
 * Services are served as properties on the container
 
+## Installation
+
+> npm i jasc
+
 ## Usage
 
 Basic usage
