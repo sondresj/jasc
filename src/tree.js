@@ -82,7 +82,9 @@ module.exports = class Tree {
      * @param {function} cb function to be called on each node. receives value and depth
      */
     traverseRoots(cb){
-        return this.roots.forEach(root => root.traverseChildren(cb))
+        return this.roots
+            .map(root => root.traverseChildren(cb))
+            .reduce((prev, cur) => cur ? cur : prev, false)
     }
 
     dump(){        

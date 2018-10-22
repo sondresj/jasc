@@ -53,6 +53,19 @@ describe('Tree', () => {
         expect(traversedValues).toEqual(['a','b','c','d','e','f','g','h','i'])
     })
 
+    it('Can traverse roots with predicate', () => {
+        const tree = new Tree();
+        tree.push('a')
+        tree.push('b')
+        tree.pop()
+        tree.pop()
+        tree.pop()
+        tree.push('c')
+
+        expect(tree.traverseRoots(n => n.key === 'd')).toBeFalsy()
+        expect(tree.traverseRoots(n => n.key === 'c')).toBeTruthy()
+    })
+
     it('Can traverse parents', () => {
         const tree = new Tree()
         tree.push('a')
