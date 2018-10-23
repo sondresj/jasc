@@ -59,7 +59,7 @@ module.exports = class Tree {
             : null
     }
 
-    push(key, value = key){
+    push(key, value){
         const { current } = this
         const node = new Node(key, value, current)
         _defProp(this, key, node)

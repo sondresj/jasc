@@ -4,8 +4,8 @@ const Tree = require('./tree')
 describe('Tree', () => {
     it('Grows', () => {
         const tree = new Tree()
-        tree.push('a')
-        tree.push('b')
+        tree.push('a', 'a')
+        tree.push('b', 'b')
 
         expect(tree.roots.length).toBe(1)
         expect(tree.roots[0].value).toBe('a')
@@ -14,9 +14,9 @@ describe('Tree', () => {
 
     it('Can grow multiple roots', () => {
         const tree = new Tree()
-        tree.push('a')
+        tree.push('a', 'a')
         tree.pop()
-        tree.push('b')
+        tree.push('b', 'b')
 
         expect(tree.roots.length).toBe(2)
         expect(tree.roots[0].value).toBe('a')
@@ -25,28 +25,28 @@ describe('Tree', () => {
 
     it('Can reach root from leaf', () => {
         const tree = new Tree()
-        tree.push('a')
-        tree.push('b')
-        tree.push('c')
+        tree.push('a', 'a')
+        tree.push('b', 'b')
+        tree.push('c', 'c')
         
         expect(tree.c.parent.parent.value).toBe('a')
     })
 
     it('Can traverse roots', () => {
         const tree = new Tree()
-        tree.push('a')
-        tree.push('b')
+        tree.push('a', 'a')
+        tree.push('b', 'b')
         tree.pop()
-        tree.push('c')
+        tree.push('c', 'c')
         tree.pop()
         tree.pop()
-        tree.push('d')
-        tree.push('e')
-        tree.push('f')
-        tree.push('g')
-        tree.push('h')
+        tree.push('d', 'd')
+        tree.push('e', 'e')
+        tree.push('f', 'f')
+        tree.push('g', 'g')
+        tree.push('h', 'h')
         tree.pop()
-        tree.push('i')
+        tree.push('i', 'i')
         let traversedValues = []
         tree.traverseRoots(node => traversedValues.push(node.value))
         tree.dump()
@@ -55,12 +55,12 @@ describe('Tree', () => {
 
     it('Can traverse roots with predicate', () => {
         const tree = new Tree();
-        tree.push('a')
-        tree.push('b')
+        tree.push('a', 'a')
+        tree.push('b', 'b')
         tree.pop()
         tree.pop()
         tree.pop()
-        tree.push('c')
+        tree.push('c', 'c')
 
         expect(tree.traverseRoots(n => n.key === 'd')).toBeFalsy()
         expect(tree.traverseRoots(n => n.key === 'c')).toBeTruthy()
@@ -68,10 +68,10 @@ describe('Tree', () => {
 
     it('Can traverse parents', () => {
         const tree = new Tree()
-        tree.push('a')
-        tree.push('b')
-        tree.push('c')
-        const d = tree.push('d')
+        tree.push('a', 'a')
+        tree.push('b', 'b')
+        tree.push('c', 'c')
+        const d = tree.push('d', 'a')
 
         expect(d.traverseParents(n => n.key === 'a')).toBeTruthy()
     })
