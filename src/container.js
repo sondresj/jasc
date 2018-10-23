@@ -11,7 +11,12 @@ module.exports = class Container {
      * @param {function} cb A function that receives the container as it's only argument. 
      * @returns {Container} the container itself, so that you may chain multiple servings
      */
-    serve(name, cb){   
+    serve(name, cb){
+        if(!name || typeof name !== 'string')
+            throw new Error(`Argument: 'name' must be a string`)
+        if(!cb || typeof cb !== 'function')
+            throw new Error(`Argument: 'cb' must be a function`)
+
         Object.defineProperty(this, name, {
             get: () => {
                 const tree = this._tree
@@ -30,11 +35,15 @@ module.exports = class Container {
                 const instance = node.value = cb(this)
                 tree.pop()
                 
+                if(instance === undefined)
+                    throw new Error(`The return value from the factory function for ${name} cannot be undefined`)
+
                 return instance
             },
             configurable: true,
             enumerable: true
         })
+        
         return this
     }
 

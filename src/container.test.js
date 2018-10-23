@@ -60,4 +60,17 @@ describe('Container', () => {
 
         expect(() => c.A).toThrowError(/Circular dependency/)
     })
+
+    it('Is Jimmy-proof', () => {
+        const c = new Container()
+
+        expect(() => c.serve(1)).toThrowError(/Argument: 'name'/)
+        expect(() => c.serve('a')).toThrowError(/Argument: 'cb'/)
+    })
+
+    it('Does not allow undefined services', () =>{
+        const c = new Container()
+        c.serve('a', () => {})
+        expect(() => c.a).toThrowError(/cannot be undefined/)
+    })
 })
