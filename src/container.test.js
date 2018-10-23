@@ -12,9 +12,11 @@ describe('Container', () => {
 
     it('Resolves dependencies', () => {
         const c = new Container()
-        c.serve('A', () => 'a').serve('BA', c => 'b' + c.A)
+        c.serve('A', () => 'a')
+         .serve('B', c => 'b' + c.A)
+         .serve('C', c => 'c' + c.B)
 
-        expect(c.BA).toBe('ba')
+        expect(c.C).toBe('cba')
     })
 
     it('Always returns the same ref', () => {

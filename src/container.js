@@ -16,13 +16,15 @@ module.exports = class Container {
             get: () => {
                 const tree = this._tree
 
-                if(tree.current && tree.current.traverseParents(node => node.key === name)){
-                    tree.dump()
-                    throw new Error(`Circular dependency detected while resolving ${name}`)
-                }                
-
-                if(tree.hasOwnProperty(name))
-                    return tree[name].value
+                if(tree.hasOwnProperty(name)){
+                    const node = tree[name]
+                    if(node.value === undefined){
+                        tree.dump()
+                        throw new Error(`Circular dependency detected while resolving ${name}`)
+                    }
+                    else 
+                        return node.value
+                }
                 
                 const node = tree.push(name)
                 const instance = node.value = cb(this)
