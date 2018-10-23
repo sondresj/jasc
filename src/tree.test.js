@@ -41,7 +41,7 @@ describe('Tree', () => {
         const e = tree.add('e', 'e', d)
         tree.add('f', 'f', e)
         tree.add('g', 'g', e)
-        
+
         const h = tree.add('h', 'h')
         tree.add('i', 'i', h)
 
@@ -55,13 +55,23 @@ describe('Tree', () => {
         const tree = new Tree();
         const a = tree.add('a', 'a')
         tree.add('b', 'b', a)
-        // tree.pop()
-        // tree.pop()
-        // tree.pop()
         tree.add('c', 'c')
 
         expect(tree.traverseRoots(n => n.key === 'd')).toBeFalsy()
         expect(tree.traverseRoots(n => n.key === 'c')).toBeTruthy()
+    })
+
+    it('Can stop travesing when predicate matches', () => {
+        const tree = new Tree();
+        let av = false, bv = false, cv = false, dv = false // v for visited
+        const a = tree.add('a', () => { av = true; return 'a' })
+        const b = tree.add('b', () => { bv = true; return 'b' }, a)
+        tree.add('c', () => { cv = true; return 'c' }, b)
+        tree.add('d', () => { dv = true; return 'd' })
+
+        tree.traverseRoots(n => n.value() === 'b')
+        expect(av && bv).toBeTruthy()
+        expect(cv && dv).toBeFalsy()
     })
 
     it('Can traverse parents', () => {

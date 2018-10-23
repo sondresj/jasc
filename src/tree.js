@@ -1,9 +1,7 @@
 const _traverseChildren = (cb, node, depth = 0) => {
     const res = cb(node, depth)
-    const stop = typeof res === 'boolean' && res
-    return stop || node.children
-            .map(n => _traverseChildren(cb, n, depth + 1))
-            .reduce((prev, cur) => cur ? cur : prev, false)
+    return typeof res === 'boolean' && res || node.children
+            .some(n => _traverseChildren(cb, n, depth + 1))
 }
 
 const _traverseParents = (cb, node) => {
@@ -11,8 +9,7 @@ const _traverseParents = (cb, node) => {
         return false
 
     const res = cb(node)
-    const stop = typeof res === 'boolean' && res
-    return stop || _traverseParents(cb, node.parent)
+    return typeof res === 'boolean' && res || _traverseParents(cb, node.parent)
 }
 
 class Node{
@@ -50,6 +47,13 @@ class Tree {
         this.roots = []
     }
 
+    /**
+     * Creates and adds a node to the tree.
+     * @param {string} key 
+     * @param {any} value
+     * @param {Node} parent If null or undefined, this node will be treated as a root
+     * @returns {Node} the created node
+     */
     add(key, value, parent){
         const node = new Node(key, value, parent)
         _defProp(this, key, node)
@@ -63,9 +67,7 @@ class Tree {
      * @param {function} cb function to be called on each node. receives value and depth
      */
     traverseRoots(cb){
-        return this.roots
-            .map(root => root.traverseChildren(cb))
-            .reduce((prev, cur) => cur ? cur : prev, false)
+        return this.roots.some(root => root.traverseChildren(cb))
     }
 
     dump(){        

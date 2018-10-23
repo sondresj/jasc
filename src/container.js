@@ -14,9 +14,9 @@ module.exports = class Container {
      */
     serve(name, cb){
         if(!name || typeof name !== 'string')
-            throw new Error(`Argument: 'name' must be a string`)
+            throw new Error(`Argument: 'name' must be a defined string`)
         if(!cb || typeof cb !== 'function')
-            throw new Error(`Argument: 'cb' must be a function`)
+            throw new Error(`Argument: 'cb' must be a defined function`)
 
         Object.defineProperty(this, name, {
             get: () => {
