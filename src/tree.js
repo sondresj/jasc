@@ -21,6 +21,8 @@ class Node{
         this.value = value
         this.parent = parent
         this.children = []
+        if(parent)
+            parent.children.push(this)
     }
 
     traverseChildren(cb, depth = 0){
@@ -32,49 +34,28 @@ class Node{
     }
 }
 
-const _defProp = (obj, name, valueFunc) => {
+const _defProp = (obj, name, value) => {
     if(obj.hasOwnProperty(name))
         throw new Error(`Can't redefine property ${name}`)
 
-    const getter = typeof valueFunc !== 'function' 
-        ? () => valueFunc
-        : valueFunc
-
     Object.defineProperty(obj, name, {
-        get: getter,
+        get: () => value,
         configurable: true,
         enumerable: true
     })
 }
 
-module.exports = class Tree {
+class Tree {
     constructor(){
         this.roots = []
-        this._stack = []
     }
 
-    get current(){
-        return this._stack.length > 0 
-            ? this._stack[this._stack.length - 1] 
-            : null
-    }
-
-    push(key, value){
-        const { current } = this
-        const node = new Node(key, value, current)
+    add(key, value, parent){
+        const node = new Node(key, value, parent)
         _defProp(this, key, node)
-
-        if(!current)
+        if(!parent)
             this.roots.push(node)
-        else
-            current.children.push(node)
-        
-        this._stack.push(node)
         return node
-    }
-
-    pop(){
-        return this._stack.pop()
     }
 
     /**
@@ -108,3 +89,6 @@ module.exports = class Tree {
         return this
     }
 }
+
+module.exports.Tree = Tree
+module.exports.Node = Node

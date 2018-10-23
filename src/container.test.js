@@ -71,6 +71,7 @@ describe('Container', () => {
     it('Does not allow undefined services', () =>{
         const c = new Container()
         c.serve('a', () => {})
-        expect(() => c.a).toThrowError(/cannot be undefined/)
+
+        expect(c.a).toBeDefined()
     })
 })

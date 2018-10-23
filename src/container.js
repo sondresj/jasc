@@ -1,8 +1,9 @@
-const Tree = require('./tree')
+const { Tree } = require('./tree')
 
 module.exports = class Container {
     constructor(){
         this._tree = new Tree()
+        this._current = null
     }
 
     /**
@@ -27,23 +28,17 @@ module.exports = class Container {
                         tree.dump()
                         throw new Error(`Circular dependency detected while resolving ${name}`)
                     }
-                    else 
-                        return node.value
+                    return node.value
                 }
-                
-                const node = tree.push(name)
-                const instance = node.value = cb(this)
-                tree.pop()
-                
-                if(instance === undefined)
-                    throw new Error(`The return value from the factory function for ${name} cannot be undefined`)
 
-                return instance
+                const node = this._current = tree.add(name, undefined, this._current)                
+                const instance = cb(this)
+                return node.value = instance === undefined ? null : instance // No undefined please.. 
             },
             configurable: true,
             enumerable: true
         })
-        
+
         return this
     }
 
