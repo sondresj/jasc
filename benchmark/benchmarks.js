@@ -1,4 +1,3 @@
-//const fs = require('fs')
 const Container = require('../src/container')
 const MjtContainer = require('./mjt_container')
 
@@ -63,7 +62,7 @@ bench('Jasc container - Giant dependency chain', () => {
             container.serve(name, c => name + c[names[i - 1]])
     }
 
-    const resolved = container[names[names.length - 1]] //triggers the construction of the whole shabang
+    const resolved = container[names[names.length - 1]] 
 })
 
 bench('Mjt Container - Giant dependency chain', () => {
@@ -76,7 +75,7 @@ bench('Mjt Container - Giant dependency chain', () => {
             container.service(name, c => name + c[names[i - 1]])
     }
 
-    const resolved = container[names[names.length - 1]] //triggers the construction of the whole shabang
+    const resolved = container[names[names.length - 1]]
 })
 
 console.log('\n\n')
@@ -92,7 +91,7 @@ bench('Jasc Container - Giant with 1 service depending on all services', () => {
             container.serve(name, () => name)
     }
 
-    const resolved = container[names[names.length - 1]] //triggers the construction of the whole shabang
+    const resolved = container[names[names.length - 1]]
 })
 
 bench('Mjt Container - Giant with 1 service depending on all services', () => {
@@ -106,7 +105,7 @@ bench('Mjt Container - Giant with 1 service depending on all services', () => {
             container.service(name, () => name)
     }
 
-    const resolved = container[names[names.length - 1]] //triggers the construction of the whole shabang
+    const resolved = container[names[names.length - 1]]
 })
 
 console.log('\n\n')
@@ -125,5 +124,36 @@ bench('Mjt Container - Creating container, register and resolve service wih 1 de
     }
 })
 
-// fs.writeFileSync('../.bench/jasc.txt', JSON.stringify(jasc))
-// fs.writeFileSync('../.bench/mjtc.txt', JSON.stringify(mjtc))
+console.log('\n\n')
+
+const jasc = new Container()
+for (let i = 0; i < names.length; i++) {
+    const name = names[i]
+    if (i === 0)
+        jasc.serve(name, () => name)
+    else
+        jasc.serve(name, c => name + c[names[i - 1]])
+}
+
+jasc[names[names.length - 1]]
+let jasc_root
+bench('Jasc Container - Get roots of giant container', () => {
+    jasc_root = jasc._tree.getRoots()[0]
+})
+console.log(jasc_root.key)
+
+const mjtc = new MjtContainer()
+for (let i = 0; i < names.length; i++) {
+    const name = names[i]
+    if (i === 0)
+        mjtc.service(name, () => name)
+    else
+        mjtc.service(name, c => name + c[names[i - 1]])
+}
+
+mjtc[names[names.length - 1]]
+let mjtc_root
+bench('Mjtc Container - Get roots of giant container', () => {
+    mjtc_root = mjtc.buildTrees()[0]
+})
+console.log(mjtc_root.name)
