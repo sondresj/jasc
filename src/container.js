@@ -31,8 +31,10 @@ module.exports = class Container {
                     return node.value
                 }
 
-                const node = this._current = tree.add(name, undefined, this._current)                
+                const node = this._current = tree.add(name, undefined, this._current)
                 const instance = cb(this)
+                this._current = node.parent
+
                 return node.value = instance === undefined ? null : instance // No undefined please.. 
             },
             configurable: true,

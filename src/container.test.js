@@ -1,5 +1,3 @@
-//import Container from './container'
-
 const Container = require('./container')
 
 describe('Container', () => {
@@ -73,5 +71,28 @@ describe('Container', () => {
         c.serve('a', () => {})
 
         expect(c.a).toBeDefined()
+    })
+
+    it('Constructs nodes with correct parents', () => {
+        const container = new Container()
+        container
+            .serve('a', c => 'a' + c.b + c.c)
+            .serve('b', c => 'b')
+            .serve('c', c => 'c')
+
+        const a = container.a
+        expect(container._tree.a.children.map(child => child.key)).toEqual(['b','c'])
+    })
+
+    it('Constructs independet trees', () => {
+        const container = new Container()
+        container
+            .serve('a', c => 'a' + c.b)
+            .serve('b', c => 'b')
+            .serve('c', c => 'c' + c.d)
+            .serve('d', c => 'd')
+
+        const {a,c} = container
+        expect(container._tree.roots.map(root => root.key)).toEqual(['a','c'])
     })
 })
