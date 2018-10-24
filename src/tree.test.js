@@ -6,9 +6,10 @@ describe('Tree', () => {
         const a = tree.add('a', 'a')
         tree.add('b', 'b', a)
 
-        expect(tree.roots.length).toBe(1)
-        expect(tree.roots[0].value).toBe('a')
-        expect(tree.roots[0].children.length).toBe(1)
+        const roots = tree.getRoots()
+        expect(roots.length).toBe(1)
+        expect(roots[0].value).toBe('a')
+        expect(roots[0].children.size).toBe(1)
     })
 
     it('Can grow multiple roots', () => {
@@ -16,9 +17,20 @@ describe('Tree', () => {
         tree.add('a', 'a')
         tree.add('b', 'b')
 
-        expect(tree.roots.length).toBe(2)
-        expect(tree.roots[0].value).toBe('a')
-        expect(tree.roots[1].value).toBe('b')
+        const roots = tree.getRoots()
+        expect(roots.length).toBe(2)
+        expect(roots[0].value).toBe('a')
+        expect(roots[1].value).toBe('b')
+    })
+
+    it('Can fuse roots', () => {
+        const tree = new Tree()
+        
+        const a = tree.add('a', 'a')
+        const b = tree.add('b', 'b')
+        const c = tree.add('c', 'c', [a, b])
+        const d = tree.add('d', 'd', c)
+        const e = tree.add('e', 'e', c)
     })
 
     it('Can reach root from leaf', () => {
@@ -27,7 +39,8 @@ describe('Tree', () => {
         const b = tree.add('b', 'b', a)
         tree.add('c', 'c', b)
         
-        expect(tree.c.parent.parent.value).toBe('a')
+        expect(tree.get('c').parents.has(b))
+        expect(tree.get('b').parents.has(a))
     })
 
     it('Can traverse roots', () => {
@@ -97,6 +110,6 @@ describe('Tree', () => {
 
         const node = tree.add('a')
         node.value = 'b'
-        expect(tree.a.value).toBe('b')
+        expect(tree.get('a').value).toBe('b')
     })
 })

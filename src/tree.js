@@ -1,25 +1,23 @@
 const _traverseChildren = (cb, node, depth = 0) => {
     const res = cb(node, depth)
-    return typeof res === 'boolean' && res || node.children
-            .some(n => _traverseChildren(cb, n, depth + 1))
+    return typeof res === 'boolean' && res 
+        || [...node.children].some(n => _traverseChildren(cb, n, depth + 1))
 }
 
 const _traverseParents = (cb, node) => {
-    if(!node) 
-        return false
-
     const res = cb(node)
-    return typeof res === 'boolean' && res || _traverseParents(cb, node.parent)
+    return typeof res === 'boolean' && res 
+        || [...node.parents].some(p => _traverseParents(cb, p))
 }
 
 class Node{
-    constructor(key, value, parent){
+    constructor(key, value, parents){
         this.key = key
         this.value = value
-        this.parent = parent
-        this.children = []
-        if(parent)
-            parent.children.push(this)
+        this.parents = new Set(parents)
+        this.children = new Set()
+        
+        this.parents.forEach(parent => parent.children.add(this))
     }
 
     traverseChildren(cb, depth = 0){
@@ -31,20 +29,9 @@ class Node{
     }
 }
 
-const _defProp = (obj, name, value) => {
-    if(obj.hasOwnProperty(name))
-        throw new Error(`Can't redefine property ${name}`)
-
-    Object.defineProperty(obj, name, {
-        get: () => value,
-        configurable: true,
-        enumerable: true
-    })
-}
-
 class Tree {
     constructor(){
-        this.roots = []
+        this._nodes = {}
     }
 
     /**
@@ -55,11 +42,26 @@ class Tree {
      * @returns {Node} the created node
      */
     add(key, value, parent){
-        const node = new Node(key, value, parent)
-        _defProp(this, key, node)
-        if(!parent)
-            this.roots.push(node)
-        return node
+        if(this.has(key))
+            throw new Error(`Can't redefine property ${name}`)
+        parent = parent || []
+        const parents = Array.isArray(parent) ? parent : [parent]
+        return this._nodes[key] = new Node(key, value, parents)
+    }
+
+    get(key){
+        return this._nodes[key]
+    }
+
+    has(key){
+        return this._nodes.hasOwnProperty(key)
+    }
+
+    getRoots(){
+        return Object
+            .keys(this._nodes)
+            .map(key => this._nodes[key])
+            .filter(node => node.parents.size === 0)
     }
 
     /**
@@ -67,7 +69,7 @@ class Tree {
      * @param {function} cb function to be called on each node. receives value and depth
      */
     traverseRoots(cb){
-        return this.roots.some(root => root.traverseChildren(cb))
+        return this.getRoots().some(root => root.traverseChildren(cb))
     }
 
     dump(){        
@@ -86,7 +88,7 @@ class Tree {
                 return
             }
 
-            console.log(`├${'─'.repeat(depth > 1 ? depth-2 : 0)}${depth > 1 ? '└' : ''}${node.children.length > 0 ? '┬' : '─'} ${node.key}`)
+            console.log(`├${'─'.repeat(depth > 1 ? depth-2 : 0)}${depth > 1 ? '└' : ''}${node.children.size > 0 ? '┬' : '─'} ${node.key}`)
         })
         return this
     }

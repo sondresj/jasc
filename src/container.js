@@ -22,18 +22,23 @@ module.exports = class Container {
             get: () => {
                 const tree = this._tree
 
-                if(tree.hasOwnProperty(name)){
-                    const node = tree[name]
+                if(tree.has(name)){
+                    const node = tree.get(name)
                     if(node.value === undefined){
                         tree.dump()
                         throw new Error(`Circular dependency detected while resolving ${name}`)
                     }
+
+                    if(this._current && !node.parents.has(this._current))
+                        node.parents.add(this._current)
+
                     return node.value
                 }
 
-                const node = this._current = tree.add(name, undefined, this._current)
+                const parent = this._current
+                const node = this._current = tree.add(name, undefined, parent)
                 const instance = cb(this)
-                this._current = node.parent
+                this._current = parent
 
                 return node.value = instance === undefined ? null : instance // No undefined please.. 
             },

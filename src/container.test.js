@@ -73,6 +73,8 @@ describe('Container', () => {
         expect(c.a).toBeDefined()
     })
 
+    // Integration tests with Tree (not sure how much I like the need to do this, but meh..)
+
     it('Constructs nodes with correct parents', () => {
         const container = new Container()
         container
@@ -81,7 +83,7 @@ describe('Container', () => {
             .serve('c', c => 'c')
 
         const a = container.a
-        expect(container._tree.a.children.map(child => child.key)).toEqual(['b','c'])
+        expect([...container._tree.get('a').children].map(child => child.key)).toEqual(['b','c'])
     })
 
     it('Constructs independet trees', () => {
@@ -93,6 +95,24 @@ describe('Container', () => {
             .serve('d', c => 'd')
 
         const {a,c} = container
-        expect(container._tree.roots.map(root => root.key)).toEqual(['a','c'])
+        expect(container._tree.getRoots().map(root => root.key)).toEqual(['a','c'])
+    })
+
+    it('Constructs overlapping trees', () => {
+        const container = new Container()
+        container
+            .serve('a', c => 'a' + c.c)         // a   b   dependencies point downwards 
+            .serve('b', c => 'b' + c.c)         //  \ /
+            .serve('c', c => 'c' + c.d + c.e)   //   c
+            .serve('d', c => 'd')               //  / \
+            .serve('e', c => 'e')               // d   e
+
+        const {a,b} = container
+        const roots = container._tree.getRoots()
+        const cNode = container._tree.get('c')
+
+        expect(roots.map(r => r.key)).toEqual(['a', 'b'])
+        expect(cNode.parents.size).toBe(2)
+        expect(cNode.children.size).toBe(2)
     })
 })
