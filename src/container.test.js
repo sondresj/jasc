@@ -115,4 +115,22 @@ describe('Container', () => {
         expect(cNode.parents.size).toBe(2)
         expect(cNode.children.size).toBe(2)
     })
+
+    it('Connects nodes when resolving a subtree of a tree before the tree', () => {
+        const container = new Container()
+        container
+            .serve('a', () => 'a')
+            .serve('b', c => c.a + 'b')
+            .serve('c', c => c.b + 'c')
+
+        const b = container.b
+        const c = container.c
+
+        const roots = container._tree.getRoots()
+        const bNode = container._tree.get('b')
+        expect(roots.length).toBe(1)
+        expect(roots[0].key).toBe('c')
+        expect(roots[0].children.size).toBe(1)
+        expect(roots[0].children.has(bNode)).toBeTruthy()
+    })
 })

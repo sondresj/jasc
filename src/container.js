@@ -31,8 +31,10 @@ module.exports = class Container {
                         throw new Error(`Circular dependency detected while resolving ${name}`)
                     }
 
-                    if(this._current && !node.parents.has(this._current))
+                    if(this._current){
                         node.parents.add(this._current)
+                        this._current.children.add(node)
+                    }
 
                     return node.value
                 }
