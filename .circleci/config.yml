@@ -2,6 +2,10 @@
 #
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
+
+# TODO:
+# - Set package json version M.m.b according to version/M.m tag and b build number 
+# - if tests passes, run npm publish
 version: 2
 jobs:
   build:
