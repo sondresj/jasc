@@ -25,7 +25,9 @@ module.exports = class Container {
                 if(tree.has(name)){
                     const node = tree.get(name)
                     if(node.value === undefined){
-                        tree.dump()
+                        const parents = []
+                        node.traverseParents(p => {parents.push(p.key)})
+                        console.log(`Loadstack: ${parents}`)
                         throw new Error(`Circular dependency detected while resolving ${name}`)
                     }
 

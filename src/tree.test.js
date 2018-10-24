@@ -60,7 +60,7 @@ describe('Tree', () => {
 
         let traversedValues = []
         tree.traverseRoots(node => traversedValues.push(node.value))
-        tree.dump()
+        //tree.dump()
         expect(traversedValues).toEqual(['a','b','c','d','e','f','g','h','i'])
     })
 
@@ -89,12 +89,16 @@ describe('Tree', () => {
 
     it('Can traverse parents', () => {
         const tree = new Tree()
-        const a = tree.add('a', 'a')
-        const b = tree.add('b', 'b', a)
-        const c = tree.add('c', 'c', b)
-        const d = tree.add('d', 'a', c)
+        const a = tree.add('a', 'a')            // a   b dependencies point downwards
+        const b = tree.add('b', 'b')            //  \ /
+        const c = tree.add('c', 'c', [a, b])    //   c
+        const d = tree.add('d', 'd', c)         //  / \
+        const e = tree.add('e', 'e', c)         // d   e
 
-        expect(d.traverseParents(n => n.key === 'a')).toBeTruthy()
+        const parents = []
+        e.traverseParents(p => parents.push(p.key))
+
+        expect(parents).toEqual(['c','a','b'])
     })
 
     it('Can prevent redefining nodes', () => {

@@ -25,7 +25,7 @@ class Node{
     }
 
     traverseParents(cb){
-        return _traverseParents(cb, this)
+        return [...this.parents].some(p => _traverseParents(cb, p))
     }
 }
 
