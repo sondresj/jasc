@@ -20,7 +20,7 @@ Basic usage
 import Container from 'jasc'
 
 const container = new Container()
-container.serve('greet', c => name => {
+container.serve('greet', () => name => {
     console.log(`Hello ${name}!`)
 })
 
@@ -37,9 +37,9 @@ container
         INCREMENT: 'INCREMENT',
         DECREMENT: 'DECREMENT',
     }))
-    .serve('Actions', c => ({
-        increment: () => c.store.dispatch({type: c.actionTypes.INCREMENT}),
-        decrement: () => c.store.dispatch({type: c.actionTypes.DECREMENT}),
+    .serve('Actions', ({store, actionTypes}) => ({
+        increment: () => store.dispatch({type: actionTypes.INCREMENT}),
+        decrement: () => store.dispatch({type: actionTypes.DECREMENT}),
     }))
     .serve('Counter', c => Counter(c.Actions)) // Counter is a higher order component, eg: export default (actions) => class Counter extends React.Component {....
 ```

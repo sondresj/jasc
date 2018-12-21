@@ -59,8 +59,7 @@ class Tree {
 
     getRoots(){
         return Object
-            .keys(this._nodes)
-            .map(key => this._nodes[key])
+            .values(this._nodes)
             .filter(node => node.parents.size === 0)
     }
 
