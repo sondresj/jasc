@@ -1,4 +1,4 @@
-const Container = require('./container')
+import Container from './container'
 
 describe('Container', () => {
     it('Serves served services', () => {

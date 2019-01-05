@@ -21,6 +21,20 @@
   },
   "homepage": "https://github.com/sondresj/jasc#readme",
   "devDependencies": {
-    "jest": "^23.6.0"
+    "@types/jest": "^23.3.11",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.2.2"
+  },
+  "jest": {
+    "transform": {
+      ".(ts|tsx|js)": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
   }
 }

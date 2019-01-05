@@ -1,6 +1,11 @@
-const { Tree } = require('./tree')
+import { Tree, Node } from './tree'
 
-module.exports = class Container {
+export default class Container {
+    _tree: Tree
+    _current: Node | null
+    
+    [name: string]: any
+
     constructor() {
         this._tree = new Tree()
         this._current = null
@@ -16,14 +21,14 @@ module.exports = class Container {
      * @returns {Container} The container
      * @throws {TypeError} if name is null, undefined or not a string, or if cb is null, undefined or not a function
      */
-    serve(name, cb) {
+    serve<T>(name: string, cb: (container: Container) => T): Container {
         if (!name || typeof name !== 'string')
             throw new TypeError(`Argument: 'name' must be a defined string`)
         if (!cb || typeof cb !== 'function')
             throw new TypeError(`Argument: 'cb' must be a defined function`)
 
         Object.defineProperty(this, name, {
-            get: () => {
+            get: (): T | null => {
                 const tree = this._tree
 
                 if (tree.has(name)) {
@@ -49,7 +54,7 @@ module.exports = class Container {
                     }
 
                     // the service we're resolving has been initialized previously. 
-                    return node.value
+                    return node.value as T
                 }
 
                 const parent = this._current
@@ -76,14 +81,17 @@ module.exports = class Container {
      * @returns {Container} The container
      * @throws {TypeError} if name is null, undefined or not a string, or if cb is null, undefined or not a function
      */
-    service(name, cb) {
+    service<T>(name: string, cb: (container: Container) => T): Container {
         return this.serve(name, cb)
     }
 
+    resolve<T>(type: T): T {
+        return (Object as any).values(this).find(service => (service as T) !== null)
+    }
     /**
      * Dumps the loaded services to the console.
      */
-    dump() {
+    dump(): void {
         this._tree.dump()
     }
 }
