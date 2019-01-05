@@ -1,4 +1,4 @@
-import { Tree } from './tree'
+const Tree = require('./tree').Tree
 
 describe('Tree', () => {
     it('Grows', () => {

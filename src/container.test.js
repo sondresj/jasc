@@ -1,4 +1,4 @@
-import Container from './container'
+const Container = require('./container').default
 
 describe('Container', () => {
     it('Serves served services', () => {

@@ -5,7 +5,8 @@
             "es6",
             "dom"
         ],
-        "allowJs": true,
+        "outDir": "./lib",
+        "allowJs": false,
         "skipLibCheck": false,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
@@ -14,12 +15,11 @@
         "module": "esnext",
         "moduleResolution": "node",
         "resolveJsonModule": true,
-        "isolatedModules": true,
-        "noEmit": true,
+        "noEmit": false,
         "noImplicitAny": false,
         "downlevelIteration": true,
+        "declaration": true
     },
-    "include": [
-        "src"
-    ]
+    "include": ["src"],
+    "exclude": ["node_modules", "**/*.test.js"]
 }
