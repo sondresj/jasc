@@ -4,10 +4,12 @@
   "description": "Just Another Service Container, as simple as possible",
   "main": "lib/container.js",
   "types": "lib/container.d.ts",
-  "files": ["/lib/**/*"],
+  "files": ["lib"],
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test"
   },
   "repository": {
     "type": "git",
@@ -34,10 +36,6 @@
       ".(ts|tsx)": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ]
+    "moduleFileExtensions": ["ts", "tsx", "js"]
   }
 }
