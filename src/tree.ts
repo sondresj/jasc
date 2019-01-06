@@ -47,7 +47,7 @@ export class Tree {
      * Creates and adds a node to the tree.
      * @param {string} key 
      * @param {any} value
-     * @param {Node} parent If null or undefined, this node will be treated as a root
+     * @param {Node | Node[]} parent If null or undefined, this node will be treated as a root
      * @returns {Node} the created node
      */
     add(key: string, value: any, parent: Node | Node[] | null): Node {

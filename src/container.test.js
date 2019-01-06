@@ -70,7 +70,7 @@ describe('Container', () => {
         const c = new Container()
         c.serve('a', () => {})
 
-        expect(c.a).toBeDefined()
+        expect(() => c.a).toThrowError()
     })
 
     // Integration tests with Tree (not sure how much I like the need to do this, but meh..)

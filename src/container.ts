@@ -60,9 +60,11 @@ export default class Container {
                 const parent = this._current
                 const node = this._current = tree.add(name, undefined, parent)
                 const instance = cb(this)
+                if(instance === undefined)
+                    throw new Error('cb returned undefined')
                 this._current = parent
 
-                return node.value = instance === undefined ? null : instance // Null is ok, but not undefined
+                return node.value = instance
             },
             configurable: false,
             enumerable: true
@@ -85,9 +87,6 @@ export default class Container {
         return this.serve(name, cb)
     }
 
-    resolve<T>(type: T): T {
-        return (Object as any).values(this).find(service => (service as T) !== null)
-    }
     /**
      * Dumps the loaded services to the console.
      */
