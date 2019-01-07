@@ -1,10 +1,8 @@
 import { Tree, Node } from './tree'
 
-export default class Container {
-    _tree: Tree
-    _current: Node | null
-    
-    [name: string]: any
+export default class Container<Props> {
+    private _tree: Tree
+    private _current: Node | null
 
     constructor() {
         this._tree = new Tree()
@@ -21,14 +19,14 @@ export default class Container {
      * @returns {Container} The container
      * @throws {TypeError} if name is null, undefined or not a string, or if cb is null, undefined or not a function
      */
-    serve<T>(name: string, cb: (container: Container) => T): Container {
+    serve<T>(name: keyof Props, cb: (container: Props) => T): Container<Props> & Props {
         if (!name || typeof name !== 'string')
             throw new TypeError(`Argument: 'name' must be a defined string`)
         if (!cb || typeof cb !== 'function')
             throw new TypeError(`Argument: 'cb' must be a defined function`)
 
         Object.defineProperty(this, name, {
-            get: (): T | null => {
+            get: (): T => {
                 const tree = this._tree
 
                 if (tree.has(name)) {
@@ -43,7 +41,7 @@ export default class Container {
 
                     // cb has not yet returned, so we're in a resolve stack where we have looped back on ourselves (since tree.has(name) is true)
                     if (node.value === undefined) {
-                        const parents = [name]
+                        const parents = [name as string]
                         node.traverseParents(p => { 
                             if(p.key === node.key)
                                 return true
@@ -59,7 +57,7 @@ export default class Container {
 
                 const parent = this._current
                 const node = this._current = tree.add(name, undefined, parent)
-                const instance = cb(this)
+                const instance = cb(<Props><unknown>this)
                 if(instance === undefined)
                     throw new Error('cb returned undefined')
                 this._current = parent
@@ -70,21 +68,7 @@ export default class Container {
             enumerable: true
         })
 
-        return this
-    }
-
-    /**
-     * Define a service for the container to serve.
-     * The service will be defined as a property on the service, and will be lazily constructed. 
-     * The construction of the service takes place the first time it is resolved (accessed).
-     * If a circular dependency is detected, an Error is thrown. 
-     * @param {string} name Name of the service the container should serve
-     * @param {(ioc: Container)} cb Factory function for your service
-     * @returns {Container} The container
-     * @throws {TypeError} if name is null, undefined or not a string, or if cb is null, undefined or not a function
-     */
-    service<T>(name: string, cb: (container: Container) => T): Container {
-        return this.serve(name, cb)
+        return <Container<Props> & Props><unknown>this
     }
 
     /**
@@ -93,4 +77,9 @@ export default class Container {
     dump(): void {
         this._tree.dump()
     }
+}
+
+export const createContainer = <Props>() => {
+    const container = new Container<Props>()
+    return <Container<Props> & Props><unknown>container
 }

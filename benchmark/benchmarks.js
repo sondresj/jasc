@@ -1,5 +1,5 @@
-const Container = require('../src/container')
-const MjtContainer = require('./mjt_container')
+const Container = require('../lib/container').default
+const MjtContainer = require('./mjt_container').VanillaContainer
 
 const bench = (name, closure, samples = 10) => {
     console.log(`Benchmarking ${name} with ${samples} samples`)

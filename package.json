@@ -1,10 +1,13 @@
 {
   "name": "jasc",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Just Another Service Container, as simple as possible",
   "main": "lib/container.js",
   "types": "lib/container.d.ts",
-  "files": ["lib"],
+  "files": [
+    "lib",
+    "src"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest",
@@ -36,6 +39,10 @@
       ".(ts|tsx)": "ts-jest"
     },
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": ["ts", "tsx", "js"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ]
   }
 }

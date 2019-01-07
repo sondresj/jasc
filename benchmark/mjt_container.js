@@ -1,6 +1,6 @@
 const unique = strs => [...new Set(strs)]
 
-module.exports = class Container{
+module.exports.Container = class Container{
     constructor(){
         this.services = {}
         this.isLoading = {}
@@ -58,5 +58,29 @@ module.exports = class Container{
         })
 
         return depNames.map(getTree).filter(tree => tree.isRoot)
+    }
+}
+
+
+module.exports.VanillaContainer = class VanillaContainer {
+    constructor(){
+        this.services = {}
+    }
+
+    service(name, cb){
+        Object.defineProperty(this, name, {
+            get: () =>{
+            
+                if(!this.services.hasOwnProperty(name)){
+                    this.services[name] = cb(this)
+                }
+
+                return this.services[name]
+            },
+            configurable: true,
+            enumerable: true
+        })
+
+        return this
     }
 }
