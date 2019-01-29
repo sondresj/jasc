@@ -20,13 +20,14 @@ export interface Node<T = unknown> {
     traverseChildren: (cb: TraverserCallback, depth?: number) => boolean
     traverseParents: (cb: TraverserCallback) => boolean
 }
+
 export const createNode = <T = unknown>(key: string, parents: Array<Node>, value?: T): Node<T> => {
     const node = {
-        key, value, parents: new Set(parents), children: new Set()
+        key, value, parents: new Set(parents), children: new Set(),
+        traverseChildren: function(this: Node<T>, cb: TraverserCallback, depth: number = 0) { return _traverseChildren(cb, this, depth)},
+        traverseParents: function(this: Node<T>, cb: TraverserCallback){ return [...this.parents].some(parent => _traverseParents(cb, parent))}
     } as Node<T>
     parents.forEach(parent => parent.children.add(node))
-    node.traverseChildren = (cb: TraverserCallback, depth: number = 0) => _traverseChildren(cb, node, depth)
-    node.traverseParents = (cb: TraverserCallback) => [...node.parents].some(parent => _traverseParents(cb, parent))
     return node
 }
 
@@ -39,32 +40,35 @@ export interface Tree {
     dump: () => Tree
 }
 
-export const createTree = () => {
+export const createTree = (): Tree => {
     const nodes: {[key: string]: Node} = {}
 
-    const tree = {
+    return {
         get: (key: string): Node => nodes[key],
         has: (key: string): boolean => nodes.hasOwnProperty(key),
-        getRoots: (): Array<Node> => (Object as any).values(nodes).filter((node: Node) => node.parents.size === 0)
-    } as Tree
-    tree.add = <T>(key: string, parent: Node | Node[] | null, value?: T): Node => {
-        if(tree.has(key))
-            throw new Error(`Can't redefine property ${name}`)
-        parent = parent || []
-        const parents = Array.isArray(parent) ? parent : [parent]
-        return nodes[key] = createNode(key, parents, value)
-    },
-    tree.traverseRoots = (cb: TraverserCallback): boolean => tree.getRoots().some(root => root.traverseChildren(cb))
-    tree.dump = (): Tree => {
-        tree.traverseRoots((node, depth) => {
-            if(depth === 0){
-                console.log(`┌ ${node.key}    √ᴿᴼᴼᵀ`)
-                return
-            }
+        getRoots: (): Array<Node> => (Object as any).values(nodes).filter((node: Node) => node.parents.size === 0),
+        add: function<T>(this: Tree, key: string, parent: Node | Node[] | null, value?: T): Node {
+            if(this.has(key))
+                throw new Error(`Can't redefine property ${name}`)
+            parent = parent || []
+            const parents = Array.isArray(parent) ? parent : [parent]
+            return nodes[key] = createNode(key, parents, value)
+        },
+        traverseRoots: function(this: Tree, cb: TraverserCallback): boolean { 
+            return this
+                .getRoots()
+                .some(root => root.traverseChildren(cb)) 
+        },
+        dump: function(this: Tree): Tree {
+            this.traverseRoots((node, depth) => {
+                if(depth === 0){
+                    console.log(`┌ ${node.key}    √ᴿᴼᴼᵀ`)
+                    return
+                }
 
-            console.log(`├${'─'.repeat(depth! > 1 ? depth!-2 : 0)}${depth! > 1 ? '└' : ''}${node.children.size > 0 ? '┬' : '─'} ${node.key}`)
-        })
-        return tree
+                console.log(`├${'─'.repeat(depth! > 1 ? depth!-2 : 0)}${depth! > 1 ? '└' : ''}${node.children.size > 0 ? '┬' : '─'} ${node.key}`)
+            })
+            return this
+        }
     }
-    return tree
 }

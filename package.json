@@ -10,9 +10,10 @@
   ],
   "scripts": {
     "build": "tsc",
-    "test": "jest",
+    "test": "jest --watch",
+    "citest": "jest --ci",
     "prepare": "npm run build",
-    "prepublishOnly": "npm test"
+    "prepublishOnly": "npm run citest"
   },
   "repository": {
     "type": "git",

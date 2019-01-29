@@ -14,18 +14,31 @@ export default class Container<P = {[name: string]: unknown}>{
     /**
      * Define a service for the container to serve.
      * The service will be defined as a property on the service, and will be lazily constructed. 
-     * The construction of the service takes place the first time it is resolved (accessed).
+     * The construction of the service takes place the first time it is resolved (read).
      * If a circular dependency is detected, an Error is thrown. 
-     * @param  name Name of the service the container should serve
-     * @param cb Factory function for your service
+     * @param  name Name of the service
+     * @param value The service
      * @returns The container
-     * @throws {TypeError} if name is null, undefined or not a string, or if cb is null, undefined or not a function
+     * @throws {TypeError} if name is null, undefined or not a string, or if factory is null, undefined or not a function
      */
-    serve<T extends P[K], K extends keyof P, C extends this>(name: K, cb: (container: Readonly<Omit<P, K>>) => T): Readonly<C & Pick<P, K>> {
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, value: T): Readonly<C & Pick<P, K>>;
+    
+    /**
+     * Define a service for the container to serve.
+     * The service will be defined as a property on the service, and will be lazily constructed. 
+     * The construction of the service takes place the first time it is resolved (read).
+     * If a circular dependency is detected, an Error is thrown. 
+     * @param  name Name of the service
+     * @param factory The service factory
+     * @returns The container
+     * @throws {TypeError} if name is null, undefined or not a string, or if factory is null, undefined or not a function
+     */
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<P, K>>) => T): Readonly<C & Pick<P, K>>;
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, valueOrFactory: T | ((container: Readonly<Omit<P, K>>) => T)): Readonly<C & Pick<P, K>> {
         if (!name || typeof name !== 'string')
-            throw new TypeError(`'name' must be a defined string`)
-        if (!cb || typeof cb !== 'function')
-            throw new TypeError(`'cb' must be a defined function`)
+            throw new TypeError(`'name' must be defined`)
+        if (!valueOrFactory)
+            throw new TypeError(`'factory' must be defined`)
 
         Object.defineProperty(this, name, {
             get: (): T => {
@@ -41,7 +54,7 @@ export default class Container<P = {[name: string]: unknown}>{
                         this._current.children.add(node)
                     }
 
-                    // cb has not yet returned, so we're in a resolve stack where we have looped back on ourselves (since tree.has(name) is true)
+                    // factory has not yet returned, so we're in a resolve stack where we have looped back on ourselves (since tree.has(name) is true)
                     if (node.value === undefined) {
                         const parents = [name as string]
                         node.traverseParents(p => { 
@@ -59,9 +72,11 @@ export default class Container<P = {[name: string]: unknown}>{
 
                 const parent = this._current
                 const node = this._current = tree.add<T>(name, parent)
-                const instance = cb(this as any)
+                const instance = valueOrFactory instanceof Function
+                    ? valueOrFactory(this as any)
+                    : valueOrFactory
                 if(instance === undefined)
-                    throw new Error('cb returned undefined')
+                    throw new Error('factory returned undefined')
                 this._current = parent
 
                 return node.value = instance

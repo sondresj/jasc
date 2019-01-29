@@ -24,7 +24,7 @@ container.serve('greet', () => name => {
     console.log(`Hello ${name}!`)
 })
 
-container.greet('Michael Jackson')
+container.greet('Michael Jackson') // Hello Michael Jackson!
 ```
 
 Dependencies 
@@ -32,11 +32,11 @@ Dependencies
 const container = new Container()
 
 container
-    .serve('store', () => createStore(rootReducer))
-    .serve('actionTypes', () => ({
+    .serve('store', () => createStore(rootReducer)) // the function will be invoked when the service is resolved, deferring the factory
+    .serve('actionTypes', {      // when the service does not have any dependencies, the function is optional.
         INCREMENT: 'INCREMENT',
         DECREMENT: 'DECREMENT',
-    }))
+    })
     .serve('Actions', ({store, actionTypes}) => ({
         increment: () => store.dispatch({type: actionTypes.INCREMENT}),
         decrement: () => store.dispatch({type: actionTypes.DECREMENT}),
@@ -69,7 +69,7 @@ export default (): Services => {
 }
 ```
 
-### One gotcha 
+### One gotcha with TS 
 ```
 interface Services {
     a: number
@@ -82,7 +82,6 @@ console.log(container as any === configured) // true, it's the same instance.
 container.a    // TS error, the type of container is just Container<Services>, it does not inherit the props from Services
 configured.a   // TS ok, the type of configured is the Container<Services> unioned with each service served. 
 ```
-TS is unable to detect that 'container' has the props from the Services interface. 
-This is because the return-value of chained 'serve' calls is `Readonly<Container<Services> & Services>` (it's a little more complicated, but thats the end result after fully configuring all services)
+The 'Container' is not a union with the 'Services', but the return-type of a 'serve' call is a union of the 'Container' and a property for the service being served. A chain of serve-calls is therefore needed to build the complete type containing all the services. 
 
 This is intentional, and you should not circumvent this by casting the container as the container unioned with the services! If you do, you will loose the typescript checks verifying that you've served all the services that you have defined and that the services' types are correct.

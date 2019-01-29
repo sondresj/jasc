@@ -8,6 +8,13 @@ describe('Container', () => {
         expect(c.A).toBeTruthy()
     })
 
+    it('Serves constants when factory argument is not a function', () => {
+        const c = new Container()
+        c.serve('A', 'a')
+        .serve('AB', ioc => ioc.A + 'b')
+        expect(c.AB).toBe('ab')
+    })
+
     it('Resolves dependencies', () => {
         const c = new Container()
         c.serve('A', () => 'a')
@@ -63,7 +70,7 @@ describe('Container', () => {
         const c = new Container()
 
         expect(() => c.serve(1)).toThrowError(/'name'/)
-        expect(() => c.serve('a')).toThrowError(/'cb'/)
+        expect(() => c.serve('a')).toThrowError(/'factory'/)
     })
 
     it('Does not allow undefined services', () =>{
