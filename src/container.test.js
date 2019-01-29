@@ -43,7 +43,7 @@ describe('Container', () => {
 
     it('Detects circular dependencies', () => {
         const c = new Container()
-    
+        
         c.serve('A', c => c.C ? 'a': undefined)
          .serve('B', c => c.A ? 'b': undefined)
          .serve('C', c => c.B ? 'c': undefined)
@@ -62,8 +62,8 @@ describe('Container', () => {
     it('Is Jimmy-proof', () => {
         const c = new Container()
 
-        expect(() => c.serve(1)).toThrowError(/Argument: 'name'/)
-        expect(() => c.serve('a')).toThrowError(/Argument: 'cb'/)
+        expect(() => c.serve(1)).toThrowError(/'name'/)
+        expect(() => c.serve('a')).toThrowError(/'cb'/)
     })
 
     it('Does not allow undefined services', () =>{
@@ -132,5 +132,11 @@ describe('Container', () => {
         expect(roots[0].key).toBe('c')
         expect(roots[0].children.size).toBe(1)
         expect(roots[0].children.has(bNode)).toBeTruthy()
+    })
+
+    it('Doesnt return a new instance of itself when serving a service', () => {
+        const container = new Container()
+        const configured = container.serve('foo', () => 'bar')
+        expect(container).toBe(configured)
     })
 })

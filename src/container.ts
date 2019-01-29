@@ -1,11 +1,13 @@
-import { Tree, Node } from './tree'
+import { Tree, Node, createTree } from './tree'
 
-export default class Container<Props> {
+type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
+
+export default class Container<P = {[name: string]: unknown}>{
     private _tree: Tree
     private _current: Node | null
 
     constructor() {
-        this._tree = new Tree()
+        this._tree = createTree()
         this._current = null
     }
 
@@ -14,16 +16,16 @@ export default class Container<Props> {
      * The service will be defined as a property on the service, and will be lazily constructed. 
      * The construction of the service takes place the first time it is resolved (accessed).
      * If a circular dependency is detected, an Error is thrown. 
-     * @param {string} name Name of the service the container should serve
-     * @param {(ioc: Container)} cb Factory function for your service
-     * @returns {Container} The container
+     * @param  name Name of the service the container should serve
+     * @param cb Factory function for your service
+     * @returns The container
      * @throws {TypeError} if name is null, undefined or not a string, or if cb is null, undefined or not a function
      */
-    serve<T>(name: keyof Props, cb: (container: Props) => T): Container<Props> & Props {
+    serve<T extends P[K], K extends keyof P, C extends this>(name: K, cb: (container: Readonly<Omit<P, K>>) => T): Readonly<C & Pick<P, K>> {
         if (!name || typeof name !== 'string')
-            throw new TypeError(`Argument: 'name' must be a defined string`)
+            throw new TypeError(`'name' must be a defined string`)
         if (!cb || typeof cb !== 'function')
-            throw new TypeError(`Argument: 'cb' must be a defined function`)
+            throw new TypeError(`'cb' must be a defined function`)
 
         Object.defineProperty(this, name, {
             get: (): T => {
@@ -56,8 +58,8 @@ export default class Container<Props> {
                 }
 
                 const parent = this._current
-                const node = this._current = tree.add(name, undefined, parent)
-                const instance = cb(<Props><unknown>this)
+                const node = this._current = tree.add<T>(name, parent)
+                const instance = cb(this as any)
                 if(instance === undefined)
                     throw new Error('cb returned undefined')
                 this._current = parent
@@ -68,18 +70,14 @@ export default class Container<Props> {
             enumerable: true
         })
 
-        return <Container<Props> & Props><unknown>this
+        return this as any
     }
 
     /**
      * Dumps the loaded services to the console.
      */
-    dump(): void {
+    dump(): this {
         this._tree.dump()
+        return this
     }
-}
-
-export const createContainer = <Props>() => {
-    const container = new Container<Props>()
-    return <Container<Props> & Props><unknown>container
 }

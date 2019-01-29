@@ -1,7 +1,7 @@
 {
   "name": "jasc",
-  "version": "1.1.1",
-  "description": "Just Another Service Container, as simple as possible",
+  "version": "1.2.0",
+  "description": "Jasc Another Service Container",
   "main": "lib/container.js",
   "types": "lib/container.d.ts",
   "files": [
