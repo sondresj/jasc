@@ -2,7 +2,7 @@ import { Tree, Node, createTree } from './tree'
 
 type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
 
-type ContainerEnhancer<Services, Dependencies> = {
+export type ContainerEnhancer<Services, Dependencies> = {
     (container: Container<Services, Dependencies>): Readonly<Services>
 }
 
