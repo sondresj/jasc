@@ -2,13 +2,25 @@ import { Tree, Node, createTree } from './tree'
 
 type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
 
-export default class Container<P = {[name: string]: unknown}>{
+type ContainerEnhancer<Services, Dependencies> = {
+    (container: Container<Services, Dependencies>): Readonly<Services>
+}
+
+export default class Container<P = {[name: string]: unknown}, AllServices = P>{
     private _tree: Tree
     private _current: Node | null
 
     constructor() {
         this._tree = createTree()
         this._current = null
+    }
+
+    /**
+     * TODO
+     * @param enhancer 
+     */
+    use<S, C extends this>(enhancer: ContainerEnhancer<S, AllServices>): Readonly<C & S>{
+        return enhancer(this as any) as any
     }
 
     /**
@@ -33,8 +45,8 @@ export default class Container<P = {[name: string]: unknown}>{
      * @returns The container
      * @throws {TypeError} if name is null, undefined or not a string, or if factory is null, undefined or not a function
      */
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<P, K>>) => T): Readonly<C & Pick<P, K>>;
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, valueOrFactory: T | ((container: Readonly<Omit<P, K>>) => T)): Readonly<C & Pick<P, K>> {
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<AllServices, K>>) => T): Readonly<C & Pick<P, K>>;
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, valueOrFactory: T | ((container: Readonly<Omit<AllServices, K>>) => T)): Readonly<C & Pick<P, K>> {
         if (!name || typeof name !== 'string')
             throw new TypeError(`'name' must be defined`)
         if (!valueOrFactory)
