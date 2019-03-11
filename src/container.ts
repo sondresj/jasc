@@ -45,8 +45,8 @@ export default class Container<P = {[name: string]: unknown}, AllServices = P>{
      * @returns The container
      * @throws {TypeError} if name is null, undefined or not a string, or if factory is null, undefined or not a function
      */
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<AllServices, K>>) => T): Readonly<C & Pick<P, K>>;
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, valueOrFactory: T | ((container: Readonly<Omit<AllServices, K>>) => T)): Readonly<C & Pick<P, K>> {
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<AllServices & P, K>>) => T): Readonly<C & Pick<P, K>>;
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, valueOrFactory: T | ((container: Readonly<Omit<AllServices & P, K>>) => T)): Readonly<C & Pick<P, K>> {
         if (!name || typeof name !== 'string')
             throw new TypeError(`'name' must be defined`)
         if (!valueOrFactory)
