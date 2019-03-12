@@ -7,7 +7,7 @@ type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
  * @template Services The services the provider should provide
  * @template Dependencies The dependencies the provider needs to define the `Services`
  */
-export type ContainerProvider<Services, Dependencies> = {
+export type ContainerProvider<Services, Dependencies = {}> = {
     (container: Container<Services, Dependencies>): Readonly<Services>
 }
 
