@@ -27,18 +27,6 @@ export default class Container<P = {[name: string]: unknown}, Dependencies = P>{
     use<S, C extends this>(provider: ContainerProvider<S, Dependencies>): Readonly<C & S>{
         return provider(this as any) as any
     }
-
-    /**
-     * Define a service for the container to serve.
-     * The service will be defined as a property on the service, and will be lazily constructed. 
-     * The construction of the service takes place the first time it is resolved (read).
-     * If a circular dependency is detected, an Error is thrown. 
-     * @param  name Name of the service
-     * @param value The service
-     * @returns The container
-     * @throws {TypeError} if name is null, undefined or not a string, or if factory is null, undefined or not a function
-     */
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, value: T): Readonly<C & Pick<P, K>>;
     
     /**
      * Define a service for the container to serve.
@@ -50,11 +38,10 @@ export default class Container<P = {[name: string]: unknown}, Dependencies = P>{
      * @returns The container
      * @throws {TypeError} if name is null, undefined or not a string, or if factory is null, undefined or not a function
      */
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<P & Dependencies, K>>) => T): Readonly<C & Pick<P, K>>;
-    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, valueOrFactory: T | ((container: Readonly<Omit<P & Dependencies, K>>) => T)): Readonly<C & Pick<P, K>> {
+    serve<T extends P[K], K extends keyof Omit<P, keyof this>, C extends this>(name: K, factory: (container: Readonly<Omit<P & Dependencies, K>>) => T): Readonly<C & Pick<P, K>> {
         if (!name || typeof name !== 'string')
             throw new TypeError(`'name' must be defined`)
-        if (!valueOrFactory)
+        if (!factory)
             throw new TypeError(`'factory' must be defined`)
 
         Object.defineProperty(this, name, {
@@ -89,9 +76,7 @@ export default class Container<P = {[name: string]: unknown}, Dependencies = P>{
 
                 const parent = this._current
                 const node = this._current = tree.add<T>(name, parent)
-                const instance = valueOrFactory instanceof Function
-                    ? valueOrFactory(this as any)
-                    : valueOrFactory
+                const instance = factory(this as any)
                 if(instance === undefined)
                     throw new Error('factory returned undefined')
                 this._current = parent

@@ -8,13 +8,6 @@ describe('Container', () => {
         expect(c.A).toBeTruthy()
     })
 
-    it('Serves constants when factory argument is not a function', () => {
-        const c = new Container()
-        c.serve('A', 'a')
-        .serve('AB', ioc => ioc.A + 'b')
-        expect(c.AB).toBe('ab')
-    })
-
     it('Resolves dependencies', () => {
         const c = new Container()
         c.serve('A', () => 'a')
