@@ -2,7 +2,7 @@ import { Tree, Node, createTree } from './tree'
 
 type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
 
-export type ContainerEnhancer<Services, Dependencies> = {
+export type ContainerProvider<Services, Dependencies> = {
     (container: Container<Services, Dependencies>): Readonly<Services>
 }
 
@@ -17,10 +17,10 @@ export default class Container<P = {[name: string]: unknown}, Dependencies = {}>
 
     /**
      * TODO
-     * @param enhancer 
+     * @param provider 
      */
-    use<S, C extends this>(enhancer: ContainerEnhancer<S, Dependencies>): Readonly<C & S>{
-        return enhancer(this as any) as any
+    use<S, C extends this>(provider: ContainerProvider<S, Dependencies>): Readonly<C & S>{
+        return provider(this as any) as any
     }
 
     /**
