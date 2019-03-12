@@ -2,22 +2,27 @@ import { Tree, Node, createTree } from './tree'
 
 type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
 
+/**
+ * A provider function is a function that takes a container where your dependencies are defined (at some point), and must return the services that you provide. 
+ * @template Services The services the provider should provide
+ * @template Dependencies The dependencies the provider needs to define the `Services`
+ */
 export type ContainerProvider<Services, Dependencies> = {
     (container: Container<Services, Dependencies>): Readonly<Services>
 }
 
-export default class Container<P = {[name: string]: unknown}, Dependencies = {}>{
-    private _tree: Tree
-    private _current: Node | null
-
-    constructor() {
-        this._tree = createTree()
-        this._current = null
-    }
+/**
+ * 
+ * @template P The services the container should hold
+ * @template Dependencies **DO NOT SET!* This template is only used internally for `ContainerProvider<Services, Dependencies>`'s 
+ */
+export default class Container<P = {[name: string]: unknown}, Dependencies = P>{
+    private _tree: Tree = createTree()
+    private _current: Node | null = null
 
     /**
-     * TODO
-     * @param provider 
+     * Use a provider function that provides some of services defined in the template `<P>`
+     * @param provider see `ContainerProvider`
      */
     use<S, C extends this>(provider: ContainerProvider<S, Dependencies>): Readonly<C & S>{
         return provider(this as any) as any
