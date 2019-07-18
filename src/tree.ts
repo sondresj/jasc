@@ -32,8 +32,8 @@ export const createNode = <T = unknown>(key: string, parents: Array<Node>, value
 }
 
 export interface Tree {
-    add: <T>(key: string, parent: Node | Node[] | null, value?: T) => Node
-    get: (key: string) => Node
+    add: <T>(key: string, parent: Node | Node[] | null, value?: T) => Node<T>
+    get: <T = unknown>(key: string) => Node<T>
     has: (key: string) => boolean
     getRoots: () => Node[] 
     traverseRoots: (cb: TraverserCallback) => boolean
@@ -44,10 +44,10 @@ export const createTree = (): Tree => {
     const nodes: {[key: string]: Node} = {}
 
     return {
-        get: (key: string): Node => nodes[key],
+        get: <T = unknown>(key: string): Node<T> => nodes[key] as Node<T>,
         has: (key: string): boolean => nodes.hasOwnProperty(key),
-        getRoots: (): Array<Node> => (Object as any).values(nodes).filter((node: Node) => node.parents.size === 0),
-        add: function<T>(this: Tree, key: string, parent: Node | Node[] | null, value?: T): Node {
+        getRoots: (): Array<Node> => Object.values(nodes).filter((node: Node) => node.parents.size === 0),
+        add: function<T>(this: Tree, key: string, parent: Node | Node[] | null, value?: T): Node<T> {
             if(this.has(key))
                 throw new Error(`Can't redefine property ${name}`)
             parent = parent || []

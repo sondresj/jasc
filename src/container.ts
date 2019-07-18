@@ -1,7 +1,5 @@
 import { Tree, Node, createTree } from './tree'
 
-type Omit<T,K> = Pick<T, Exclude<keyof T, K>>
-
 /**
  * A provider function is a function that takes a container where your dependencies are defined (at some point), and must return the services that you provide. 
  * @template Services The services the provider should provide
@@ -49,7 +47,7 @@ export default class Container<P = {[name: string]: unknown}, Dependencies = P>{
                 const tree = this._tree
 
                 if (tree.has(name)) {
-                    const node = tree.get(name)
+                    const node = tree.get<T>(name)
 
                     // the _current property is the parent to the service currently being resolved
                     // if _current is not null then we're loading a dependency that has not yet been loaded
@@ -71,7 +69,7 @@ export default class Container<P = {[name: string]: unknown}, Dependencies = P>{
                     }
 
                     // the service we're resolving has been initialized previously. 
-                    return node.value as T
+                    return node.value
                 }
 
                 const parent = this._current
