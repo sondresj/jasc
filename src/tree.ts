@@ -49,7 +49,7 @@ export const createTree = (): Tree => {
         getRoots: (): Array<Node> => Object.values(nodes).filter((node: Node) => node.parents.size === 0),
         add: function<T>(this: Tree, key: string, parent: Node | Node[] | null, value?: T): Node<T> {
             if(this.has(key))
-                throw new Error(`Can't redefine property ${name}`)
+                throw new Error(`Can't redefine property ${key}`)
             parent = parent || []
             const parents = Array.isArray(parent) ? parent : [parent]
             return nodes[key] = createNode(key, parents, value)
